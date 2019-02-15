@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="form-editor"></div>
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://formbuilder.online/assets/js/form-builder.min.js"></script>
+    <script>
+        jQuery(function($) {
+            var options = {
+                onSave: function(formData) {
+                    $.ajax({
+                        url: '@Url.Action("SaveFormData")',
+                        method: "POST",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        data: formBuilder.actions.getData('json')
+                    }).success(function() {
+                        alert("done");
+                    });
+                },
+            };
+            var formBuilder = $('#form-editor').formBuilder(options);
+        });
+    </script>
+}
