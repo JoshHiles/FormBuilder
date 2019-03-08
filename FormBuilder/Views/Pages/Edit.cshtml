@@ -1,0 +1,89 @@
+﻿@model FormBuilder.Models.Page
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Page</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="FormId" class="control-label"></label>
+                <select asp-for="FormId" class="form-control" asp-items="ViewBag.FormId"></select>
+                <span asp-validation-for="FormId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="FieldJson" class="form-control" type="hidden" />
+            </div>
+
+            <div class="form-group">
+                <div id="form-editor"></div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://formbuilder.online/assets/js/form-builder.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script>
+        jQuery(function($) {
+            @*var options = {
+                onSave: function(formData) {
+                    $.ajax({
+                        url: '@Url.Action("SaveFormData", "Home")',
+                        method: "POST",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        data: formBuilder.actions.getData('json')
+                    }).success(function() {
+                        alert("done");
+                    });
+                },
+            };
+            options*@
+
+            const {value: email} = Swal.fire({
+                title: 'Input email address',
+                input: 'email',
+                inputPlaceholder: 'Enter your email address'
+            })
+
+            if (email) {
+                Swal.fire('Entered email: ' + email)
+            }
+
+            var formBuilder = $('#form-editor').formBuilder();
+            $('form').on('submit',
+                function(e) {
+                    e.preventDefault();
+                    console.log($(this).serialize());
+                    console.log(formBuilder.actions.getData('json'));
+                    $.post('PostForm', $(this).serialize());
+                });
+        });
+    </script>
+}

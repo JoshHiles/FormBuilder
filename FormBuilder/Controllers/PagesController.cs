@@ -9,22 +9,23 @@ using FormBuilder.Models;
 
 namespace FormBuilder.Controllers
 {
-    public class FormsController : Controller
+    public class PagesController : Controller
     {
         private readonly FormBuilderContext _context;
 
-        public FormsController(FormBuilderContext context)
+        public PagesController(FormBuilderContext context)
         {
             _context = context;
         }
 
-        // GET: Forms
+        // GET: Pages
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Forms.ToListAsync());
+            var formBuilderContext = _context.Pages.Include(p => p.Form);
+            return View(await formBuilderContext.ToListAsync());
         }
 
-        // GET: Forms/Details/5
+        // GET: Pages/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -32,40 +33,43 @@ namespace FormBuilder.Controllers
                 return NotFound();
             }
 
-            var form = await _context.Forms
+            var page = await _context.Pages
+                .Include(p => p.Form)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (form == null)
+            if (page == null)
             {
                 return NotFound();
             }
 
-            return View(form);
+            return View(page);
         }
 
-        // GET: Forms/Create
+        // GET: Pages/Create
         public IActionResult Create()
         {
+            ViewData["FormId"] = new SelectList(_context.Forms, "Id", "Id");
             return View();
         }
 
-        // POST: Forms/Create
+        // POST: Pages/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title")] Form form)
+        public async Task<IActionResult> Create([Bind("Id,FormId,Name,FieldJson")] Page page)
         {
             if (ModelState.IsValid)
             {
-                form.Id = Guid.NewGuid();
-                _context.Add(form);
+                page.Id = Guid.NewGuid();
+                _context.Add(page);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(form);
+            ViewData["FormId"] = new SelectList(_context.Forms, "Id", "Id", page.FormId);
+            return View(page);
         }
 
-        // GET: Forms/Edit/5
+        // GET: Pages/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -73,22 +77,23 @@ namespace FormBuilder.Controllers
                 return NotFound();
             }
 
-            var form = await _context.Forms.Include(x => x.Pages).FirstAsync(x => x.Id == id);
-            if (form == null)
+            var page = await _context.Pages.FindAsync(id);
+            if (page == null)
             {
                 return NotFound();
             }
-            return View(form);
+            ViewData["FormId"] = new SelectList(_context.Forms, "Id", "Title", page.FormId);
+            return View(page);
         }
 
-        // POST: Forms/Edit/5
+        // POST: Pages/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title")] Form form)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,FormId,Name,FieldJson")] Page page)
         {
-            if (id != form.Id)
+            if (id != page.Id)
             {
                 return NotFound();
             }
@@ -97,12 +102,12 @@ namespace FormBuilder.Controllers
             {
                 try
                 {
-                    _context.Update(form);
+                    _context.Update(page);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FormExists(form.Id))
+                    if (!PageExists(page.Id))
                     {
                         return NotFound();
                     }
@@ -113,10 +118,11 @@ namespace FormBuilder.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(form);
+            ViewData["FormId"] = new SelectList(_context.Forms, "Id", "Id", page.FormId);
+            return View(page);
         }
 
-        // GET: Forms/Delete/5
+        // GET: Pages/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -124,30 +130,31 @@ namespace FormBuilder.Controllers
                 return NotFound();
             }
 
-            var form = await _context.Forms
+            var page = await _context.Pages
+                .Include(p => p.Form)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (form == null)
+            if (page == null)
             {
                 return NotFound();
             }
 
-            return View(form);
+            return View(page);
         }
 
-        // POST: Forms/Delete/5
+        // POST: Pages/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var form = await _context.Forms.FindAsync(id);
-            _context.Forms.Remove(form);
+            var page = await _context.Pages.FindAsync(id);
+            _context.Pages.Remove(page);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool FormExists(Guid id)
+        private bool PageExists(Guid id)
         {
-            return _context.Forms.Any(e => e.Id == id);
+            return _context.Pages.Any(e => e.Id == id);
         }
     }
 }

@@ -1,1 +1,20 @@
-[{"type":"text","subtype":"text","label":"Text Field","className":"form-control","name":"text-1550248639816","values":null},{"type":"button","subtype":"submit","label":"Button","className":null,"name":"button-1550248642898","values":null}]
+[
+  {
+    "type": "header",
+    "subtype": "h1",
+    "label": "Contact us"
+  },
+  {
+    "type": "text",
+    "label": "First name",
+    "className": "form-control",
+    "name": "FirstName",
+    "subtype": "text"
+  },
+  {
+    "type": "button",
+    "subtype": "submit",
+    "label": "Submit",
+    "name": "button-1552052998524"
+  }
+]

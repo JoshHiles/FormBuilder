@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,16 @@ namespace FormBuilder.Controllers
             string webRootPath = _hostingEnvironment.WebRootPath;
 
             return View(new FormViewModel { Json = System.IO.File.ReadAllText(webRootPath + "/Form.json") });
+        }
+
+        public IActionResult PostForm([FromForm]TestModel model)
+        {
+            return RedirectToAction("See");
+        }
+
+        public class TestModel
+        {
+            public string FirstName { get; set; }
         }
 
         [HttpPost]

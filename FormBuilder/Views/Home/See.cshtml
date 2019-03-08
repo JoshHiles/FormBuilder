@@ -1,5 +1,6 @@
 ﻿@model FormViewModel
 @{
+    Layout = "_LayoutSMBC";
     ViewData["Title"] = "Home Page";
 }
 
@@ -13,10 +14,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://formbuilder.online/assets/js/form-render.min.js"></script>
     <script>
-        jQuery(function ($) {
-          $('form').formRender({
-          formData: @Html.Raw(Model.Json)
-        });
+        jQuery(function($) {
+            $('form').formRender({
+                dataType: 'json',
+                formData: @Html.Raw(Model.Json)
+            });
+
+            $('form').on('submit',
+                function(e) {
+                    e.preventDefault();
+                    $.post('PostForm', $(this).serialize())
+                        .done(function(response) {
+                            console.log('form saved')
+                        }).fail(function(jqXHR) {
+                            console.log('form was not saved')
+                        });
+                    return false;
+                });
         });
     </script>
 }
